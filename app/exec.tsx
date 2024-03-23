@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { Text } from '~/components/ui/text';
+import axios from "axios";
 import * as ImagePicker from 'expo-image-picker';
 interface PlaybackStatus {
     isPlaying?: boolean;
@@ -10,6 +11,7 @@ interface PlaybackStatus {
 
 export default function ExecPage() {
     const video = useRef<Video>(null);
+    const [videoUri, setVideoUri] = useState<string>('');
     const [status, setStatus] = useState<PlaybackStatus>({});
 
     const onPlaybackStatusUpdate = (playbackStatus: AVPlaybackStatus) => {
@@ -23,23 +25,48 @@ export default function ExecPage() {
         }
     };
     const pickImageAsync = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
-        });
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+            const formData = new FormData();
+            const assets = result.assets;
+            if (!assets) return;
+            console.log(assets)
 
-        if (!result.canceled) {
-            console.log(result);
-        } else {
-            alert('You did not select any image.');
+            const file = assets[0];
+            if (!file) return;
+            setVideoUri(file.uri);
+
+            const videoFile = {
+                uri: file.uri,
+                type: file.mimeType,
+                size: file.fileSize,
+            };
+
+            formData.append("file", videoFile as any);
+
+            const { data } = await axios.post('http://172.28.172.231:8000/upload', formData, {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            console.log(data);
+        } catch (error) {
+            console.log("Error while selecting file: ", error);
         }
     };
     return (
-        <View className="m-4">
+        <View className="m-4 flex gap-4">
             <Button onPress={pickImageAsync}><Text>Select Your Video</Text></Button>
             <Video
                 ref={video}
-                source={{ uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
+                source={{ uri: videoUri }}
+                style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: 'black' }}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 isLooping
