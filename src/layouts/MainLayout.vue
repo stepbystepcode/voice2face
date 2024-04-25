@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Voice2Face
+          言韵创像，虚拟共融
         </q-toolbar-title>
 
       </q-toolbar>

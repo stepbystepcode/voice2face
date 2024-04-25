@@ -48,12 +48,12 @@ const selectVideo = () => {
 
 <template>
   <div class="column q-pa-md q-gutter-y-md" style="flex-wrap: nowrap">
-    <q-btn @click="selectVoice">Upload your voice</q-btn>
+    <q-btn @click="selectVoice">选择声音文件</q-btn>
     <input type="file" name="voice" id="voice" ref="voiceRef" style="display: none">
-    <q-btn @click="selectVideo">Upload your video</q-btn>
+    <q-btn @click="selectVideo">选择视频文件</q-btn>
     <input type="file" name="video" id="video" ref="videoRef" style="display: none">
-    <q-btn @click="submit" color="primary">Submit</q-btn>
-    <video controls ref="player" style="width:100%"></video>
+    <q-btn @click="submit" color="primary">提交</q-btn>
+    <video controls="true" ref="player" style="width:100%"></video>
   </div>
 </template>
 
