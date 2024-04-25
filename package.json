@@ -2,7 +2,7 @@
   "name": "voice2face",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "productName": "言韵创像",
   "author": "Jing Li <3202146864@qq.com>",
   "type": "module",
   "private": true,
