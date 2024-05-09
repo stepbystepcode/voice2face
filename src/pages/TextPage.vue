@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import {ref} from 'vue';
+const text = ref<string>('');
 const videoRef = ref<HTMLInputElement | null>(null);
 const voiceRef = ref<HTMLInputElement | null>(null);
 const player = ref<HTMLVideoElement | null>(null);
 const submit = async () => {
   const formData = new FormData();
   if(!voiceRef.value?.files || !videoRef.value?.files) return console.error('No files selected');
-  const voice = voiceRef.value.files[0];
   const video = videoRef.value.files[0];
-  formData.append('voice', voice);
   formData.append('video', video);
+  formData.append('text', text.value);
+  formData.append('language', language.value);
+  formData.append('gender',gender.value);
   try {
     const requestOptions = {
       method: 'POST',
       body: formData,
     };
-    fetch('http://sits.frpgz1.idcfengye.com/audiodrive', requestOptions)
+    fetch('http://sits.frpgz1.idcfengye.com/textdrive', requestOptions)
       .then((response) => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(blob);
@@ -38,19 +40,40 @@ const submit = async () => {
     console.error(error);
   }
 };
-const selectVoice = () => {
-  voiceRef.value?.click();
-};
 const selectVideo = () => {
   videoRef.value?.click();
 };
+const options=[
+{
+    label: '汉语',
+    value: 'chinese'
+  },
+  {
+    label: '英语',
+    value: 'english'
+  },
+  {
+    label: '法语',
+    value: 'french'
+  },
+  {
+    label: '韩语',
+    value: 'korean'
+  }
+];
+const genderOpts=[
+    '男','女'
+];
+const language=ref('english');
+const gender=ref('男');
 
 </script>
 
 <template>
   <div class="column q-pa-md q-gutter-y-md" style="flex-wrap: nowrap">
-    <q-btn @click="selectVoice">选择声音文件</q-btn>
-    <input type="file" name="voice" id="voice" ref="voiceRef" style="display: none">
+    <q-input v-model="text" label="输入文本" />
+    <q-select v-model="language" :options="options" label="选择语言" />
+    <q-select v-model="gender" :options="genderOpts" label="选择性别" />
     <q-btn @click="selectVideo">选择视频文件</q-btn>
     <input type="file" name="video" id="video" ref="videoRef" style="display: none">
     <q-btn @click="submit" color="primary">提交</q-btn>
